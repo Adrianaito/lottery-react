@@ -5,13 +5,16 @@ import web3 from "./web3";
 
 class App extends React.Component {
   state = {
+    // properties from the lottery contract
     manager: "",
     players: [],
     balance: "",
+    // components properties
     value: "",
     message: "",
   };
   async componentDidMount() {
+    // pull of properties from the lottery contract and set the state
     const manager = await lottery.methods.manager().call();
     const players = await lottery.methods.getPlayers().call();
     const balance = await web3.eth.getBalance(lottery.options.address);
@@ -22,9 +25,13 @@ class App extends React.Component {
   handleSubmit = async (event) => {
     event.preventDefault();
 
+    // retrieve a list of active accounts provided by metamask
     const accounts = await web3.eth.getAccounts();
+
+    // set a waiting message
     this.setState({ message: "Waiting on transaction success..." });
 
+    // call the function on the contract
     await lottery.methods.enter().send({
       from: accounts[0],
       value: web3.utils.toWei(this.state.value, "ether"),
